@@ -1,18 +1,10 @@
 // tests/api.test.js
 const request = require('supertest');
-const { app, pool, port } = require('../server');
-
-let server;
-
-beforeAll(async () => {
-  server = app.listen(port, () => {
-    console.log(`Test API is running on http://localhost:${port}`);
-  });
-});
+const { app, pool } = require('../server');
 
 afterAll(async () => {
+  // Stäng DB-connection så att Jest kan avsluta snyggt
   await pool.end();
-  server.close();
 });
 
 describe('API Tests', () => {
