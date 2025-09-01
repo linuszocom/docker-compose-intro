@@ -38,3 +38,5 @@ app.post('/api/data', async (req, res) => {
 app.listen(port, () => {
   console.log(`API is running on http://localhost:${port}`);
 });
+
+module.exports = app; // Exporterar app för testning

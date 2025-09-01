@@ -1,0 +1,45 @@
+# För Node.js och npm
+# --------------------
+# Ignorera alla node_modules mappar, oavsett var de ligger
+**/node_modules
+
+# Lokala installationsmappar för npm
+npm-debug.log*
+.npm/
+.npmrc
+
+# Miljövariabler
+# --------------------
+# Exkludera miljövariabler, vilket är en säkerhetsåtgärd
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build-relaterade filer
+# --------------------
+# Byggda filer och mappar, t.ex. från create-react-app
+build/
+dist/
+out/
+
+# IDE-filer och editor-specifika filer
+# --------------------
+# Exkludera filer som genereras av din IDE (t.ex. VS Code, WebStorm)
+.vscode/
+.idea/
+*.swp
+*.bak
+*.swo
+
+# macOS och Windows
+# --------------------
+# Systemgenererade filer
+.DS_Store
+Thumbs.db
+
+# Test- och loggfiler
+# --------------------
+coverage/
+*.log
