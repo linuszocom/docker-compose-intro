@@ -1,20 +1,24 @@
+// tests/api.test.js
 const request = require('supertest');
-const server = require('../server');
+const { app, pool, port } = require('../server');
 
-describe('API Endpoints', () => {
-  it('should return "Hello from the API!" on GET /api', async () => {
-    // Gör ett GET-anrop till vår /api-endpoint
-    const response = await request(server).get('/api');
+let server;
 
-    // Kontrollerar att svaret har status 200 (OK)
-    expect(response.statusCode).toBe(200);
-
-    // Kontrollerar att meddelandet stämmer
-    expect(response.body.message).toBe('Hello from the API!');
+beforeAll(async () => {
+  server = app.listen(port, () => {
+    console.log(`Test API is running on http://localhost:${port}`);
   });
 });
 
 afterAll(async () => {
-  await server.pool.end();
+  await pool.end();
   server.close();
+});
+
+describe('API Tests', () => {
+  test('should return 200 OK for the /api endpoint', async () => {
+    const response = await request(app).get('/api');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Hello from the API!');
+  });
 });

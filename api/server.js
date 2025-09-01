@@ -43,5 +43,5 @@ const server = app.listen(port, () => {
   console.log(`API is running on http://localhost:${port}`);
 });
 
-// Exporterar nu serverinstansen, inte applikationsinstansen
-module.exports = server;
+// Exportera alla nödvändiga objekt
+module.exports = { app, server, pool };
