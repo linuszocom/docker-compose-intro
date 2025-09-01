@@ -43,4 +43,5 @@ const server = app.listen(port, () => {
   console.log(`API is running on http://localhost:${port}`);
 });
 
-module.exports = app; // Exporterar app för testning
+// Exporterar nu serverinstansen, inte applikationsinstansen
+module.exports = server;
