@@ -9,8 +9,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Build Docker image
+    - name: Build API image
       run: docker build -t my-api:latest ./api
     - name: Run test
       run: docker run --rm my-api:latest npm test
-   
+
+  build-and-test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies and build frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+        
+    - name: Build Frontend image
+      run: docker build -t my-frontend:latest ./frontend
