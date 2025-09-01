@@ -13,6 +13,9 @@ const pool = new Pool({
   port: 5432, 
 });
 
+// Gör pool-objektet tillgängligt för testfilen
+app.pool = pool;
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -35,7 +38,8 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+// Spara serverinstansen i en variabel för att kunna stänga den i testet
+const server = app.listen(port, () => {
   console.log(`API is running on http://localhost:${port}`);
 });
 
