@@ -30,7 +30,7 @@ jobs:
       run: docker tag my-api:latest ${{ secrets.DOCKERHUB_USERNAME }}/my-api:latest
     
     - name: Push image to Docker Hub
-      run: docker push my-api:latest
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api:latest
 
   build-and-test-frontend:
     runs-on: ubuntu-latest
