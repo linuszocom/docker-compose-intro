@@ -20,3 +20,12 @@ jobs:
       - name: Run tests
         run: docker run --rm my-api:latest npm test
 
+      - name: Install depend and build frontend
+        run: |
+          cd frontend
+          npm installgi
+          npm run buildc
+      
+      - name: Build frontend image
+        run: docker build -t my-frontend:latest ./frontend
+
