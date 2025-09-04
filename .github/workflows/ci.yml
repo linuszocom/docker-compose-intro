@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t my-app:latest ./api
+        run: docker build -t my-api:latest ./api
 
       - name: Run tests
         run: docker run --rm my-api:latest npm test
