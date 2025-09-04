@@ -23,8 +23,8 @@ jobs:
       - name: Install depend and build frontend
         run: |
           cd frontend
-          npm installgi
-          npm run buildc
+          npm install
+          npm run build
       
       - name: Build frontend image
         run: docker build -t my-frontend:latest ./frontend
