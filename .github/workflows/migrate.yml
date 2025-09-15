@@ -1,7 +1,7 @@
 name: Migrate Azure Db with Flyway
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {} # Körs manuellt via Actions-fliken
 
 jobs:
   migrate-db:
@@ -11,12 +11,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Flyway
-        run: |
-          FLYWAY_VERSION=10.16.0
-          curl -L "https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}.zip" --output flyway.zip
-          unzip flyway.zip
-          echo "$(pwd)/flyway-${FLYWAY_VERSION}" >> $GITHUB_PATH
+      - name: Setup Flyway CLI
+        uses: red-gate/setup-flyway@v1
 
       - name: Run Flyway migration
         env:
@@ -25,4 +21,4 @@ jobs:
           PGUSER: ${{ secrets.PGUSER }}
           PGPASSWORD: ${{ secrets.PGPASSWORD }}
         run: |
-          flyway migrate
+          flyway -url="jdbc:postgresql://$PGHOST/$PGDATABASE" -user="$PGUSER" -password="$PGPASSWORD" -locations="filesystem:db/migrations" migrate
