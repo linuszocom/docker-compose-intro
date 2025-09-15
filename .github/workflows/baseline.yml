@@ -1,0 +1,21 @@
+name: Flyway Baseline (One-time run)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  baseline-db:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Flyway baseline
+        uses: flyway/flyway-action@v1.4.0
+        with:
+          url: jdbc:postgresql://${{ secrets.PGHOST }}/${{ secrets.PGDATABASE }}
+          user: ${{ secrets.PGUSER }}
+          password: ${{ secrets.PGPASSWORD }}
+          locations: 'filesystem:db/migrations'
+          command: 'baseline'
