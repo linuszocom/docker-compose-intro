@@ -14,7 +14,7 @@ jobs:
       - name: Setup Flyway CLI
         uses: red-gate/setup-flyway@v1
 
-      - name: Run Flyway migration
+      - name: Create Flyway baseline
         env:
           PGHOST: ${{ secrets.PGHOST }}
           PGDATABASE: ${{ secrets.PGDATABASE }}
