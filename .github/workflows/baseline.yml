@@ -1,4 +1,4 @@
-name: Migrate Azure Db with Flyway
+name: Create baseline with Flyway
 
 on:
   workflow_dispatch: {} # Körs manuellt via Actions-fliken
