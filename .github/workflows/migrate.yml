@@ -1,0 +1,20 @@
+name: Migrate Azure Db with Flyway
+
+on:
+  workflow_dispatch: {} # Körs manuellt via Actions-fliken
+
+jobs:
+  migrate-db:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Flyway migration
+        uses: flyway/flyway-action@v1.4.0
+        with:
+          url: jdbc:postgresql://${{ secrets.PGHOST }}/${{ secrets.PGDATABASE }}
+          user: ${{ secrets.PGUSER }}
+          password: ${{ secrets.PGPASSWORD }}
+          locations: 'filesystem:db/migrations'
