@@ -1,21 +1,24 @@
-name: Flyway Baseline (One-time run)
+name: Migrate Azure Db with Flyway
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {} # Körs manuellt via Actions-fliken
 
 jobs:
-  baseline-db:
+  migrate-db:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Flyway baseline
-        uses: flyway/flyway-action@v1.4.0
-        with:
-          url: jdbc:postgresql://${{ secrets.PGHOST }}/${{ secrets.PGDATABASE }}
-          user: ${{ secrets.PGUSER }}
-          password: ${{ secrets.PGPASSWORD }}
-          locations: 'filesystem:db/migrations'
-          command: 'baseline'
+      - name: Setup Flyway CLI
+        uses: red-gate/setup-flyway@v1
+
+      - name: Run Flyway migration
+        env:
+          PGHOST: ${{ secrets.PGHOST }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        run: |
+          flyway -url="jdbc:postgresql://$PGHOST/$PGDATABASE" -user="$PGUSER" -password="$PGPASSWORD" -locations="filesystem:db/migrations" migrate -command: 'baseline'
