@@ -1,0 +1,24 @@
+name: Create baseline with Flyway
+
+on:
+  workflow_dispatch: {} # Körs manuellt via Actions-fliken
+
+jobs:
+  migrate-db:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flyway CLI
+        uses: red-gate/setup-flyway@v1
+
+      - name: Create Flyway baseline
+        env:
+          PGHOST: ${{ secrets.PGHOST }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        run: |
+          flyway -url="jdbc:postgresql://$PGHOST/$PGDATABASE" -user="$PGUSER" -password="$PGPASSWORD" -locations="filesystem:db/migrations" baseline
