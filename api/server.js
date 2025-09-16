@@ -10,6 +10,21 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }, 
 });
+app.pool = pool;
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
+app.get('/healthz', (req, res) => res.status(200).send('OK'));
+app.get('/', (req, res) => res.send('API up'));
 
 app.get('/api', (req, res) => {
   res.json({ message: 'Hello from the API!' });
@@ -27,12 +42,23 @@ app.post('/api/data', async (req, res) => {
     );
     res.json({ id: result.rows[0].id, status: 'success' });
   } catch (error) {
+    console.error('Failed to save data:', error);
     res.status(500).json({ status: 'error', message: 'Failed to save data' });
   }
 });
 
-const port = process.env.PORT || 3000;
-const host = '0.0.0.0';
-app.listen(port, host, () => {
-  console.log(`API is running on http://${host}:${port}`);
-});
+let server;
+
+function start(port = process.env.PORT || process.env.WEBSITES_PORT || 3000) {
+  const HOST = '0.0.0.0';
+  server = app.listen(port, HOST, () => {
+    console.log(`API is running on http://${HOST}:${server.address().port}`);
+  });
+  return server;
+}
+
+module.exports = { app, pool, start };
+
+if (require.main === module) {
+  start();
+}
