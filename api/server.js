@@ -16,6 +16,10 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from the API!' });
 });
 
+app.get('/hello', (req, res) => {
+  res.json({ message: 'Hello world!' });
+});
+
 app.post('/api/data', async (req, res) => {
   try {
     const { message } = req.body;
