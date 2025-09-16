@@ -36,6 +36,12 @@ app.post('/api/data', async (req, res) => {
 const port = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
-app.listen(port, HOST, () => {
-  console.log(`API is running on http://${HOST}:${port}`);
-});
+let server;
+
+if (require.main === module) {
+  server = app.listen(port, HOST, () => {
+    console.log(`API is running on http://${HOST}:${port}`);
+  });
+}
+
+module.exports = { app, pool, server };
