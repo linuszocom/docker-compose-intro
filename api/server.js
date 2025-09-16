@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const { Pool } = require('pg');
 
@@ -6,13 +5,8 @@ const app = express();
 app.use(express.json());
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'db',
-  database: 'my_database',
-  password: 'my-secret-pw',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
 });
-
 app.pool = pool;
 
 app.use((req, res, next) => {
@@ -23,6 +17,12 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
+app.get('/', (req, res) => res.send('API up'));
 
 app.get('/api', (req, res) => {
   res.json({ message: 'Hello from the API!' });
@@ -45,9 +45,10 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
-function start(port = process.env.PORT || 3000) {
-  const server = app.listen(port, () => {
-    console.log(`API is running on http://localhost:${server.address().port}`);
+function start(port = process.env.PORT || process.env.WEBSITES_PORT || 3000) {
+  const HOST = '0.0.0.0';
+  const server = app.listen(port, HOST, () => {
+    console.log(`API is running on http://${HOST}:${server.address().port}`);
   });
   return server;
 }
