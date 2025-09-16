@@ -6,33 +6,11 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
-process.on('uncaughtException', (err) => {
-  console.error('UncaughtException:', err);
-});
-
-process.on('unhandledRejection', (reason, p) => {
-  console.error('UnhandledRejection at:', p, 'reason:', reason);
-});
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }, 
 });
 app.pool = pool;
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
-
-app.get('/healthz', (req, res) => res.status(200).send('OK'));
-app.get('/', (req, res) => res.send('API up'));
 
 app.get('/api', (req, res) => {
   res.json({ message: 'Hello from the API!' });
@@ -55,42 +33,9 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
-let server;
+const port = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
 
-function start(port = process.env.PORT || process.env.WEBSITES_PORT || 3000) {
-  const HOST = '0.0.0.0';
-  server = app.listen(port, HOST, () => {
-    console.log(`API is running on http://${HOST}:${server.address().port}`);
-  });
-  return server;
-}
-
-function shutdown(signal) {
-  console.log(`Received ${signal}. Shutting down gracefully...`);
-  if (server) {
-    server.close(() => {
-      console.log('HTTP server closed.');
-      pool.end(() => {
-        console.log('PG pool ended.');
-        process.exit(0);
-      });
-    });
-  
-    setTimeout(() => {
-      console.error('Force exit after timeout.');
-      process.exit(1);
-    }, 10000).unref();
-  } else {
-    
-    pool.end(() => process.exit(0));
-  }
-}
-
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
-
-module.exports = { app, pool, start };
-
-if (require.main === module) {
-  start();
-}
+app.listen(port, HOST, () => {
+  console.log(`API is running on http://${HOST}:${port}`);
+});
