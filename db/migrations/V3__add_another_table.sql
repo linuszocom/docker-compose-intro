@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS history (
+    id SERIAL PRIMARY KEY,
+    text VARCHAR(255)
+);
