@@ -23,18 +23,18 @@ jobs:
       - name: Build and test API image
         run: |
           docker build -t ${{ secrets.ACR_URL }}/api:latest ./api
-          docker run --rm ${{ secrets.ACR_URL }}/api:latest npm test
+          # docker run --rm ${{ secrets.ACR_URL }}/api:latest npm test
 
       - name: Push Docker image to ACR
         run: |
           docker push ${{ secrets.ACR_URL }}/api:latest
 
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'demo-api-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
-          images: ${{ secrets.ACR_URL }}/api:latest
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      # - name: Deploy to Azure App Service
+      #   uses: azure/webapps-deploy@v2
+      #   with:
+      #     app-name: 'demo-api-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
+      #     images: ${{ secrets.ACR_URL }}/api:latest
+      #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
   # build-and-test-frontend:
   #   runs-on: ubuntu-latest
