@@ -1,7 +1,7 @@
-const pool = require('./database');
+const { pool } = require('./database');
 
 const getApiStatus = (req, res) => {
-    console.log('GET /api was called')
+  console.log('GET /api endpoint was called.'); 
   res.json({ message: 'Hello from the API!' });
 };
 
