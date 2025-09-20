@@ -5,11 +5,17 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }, 
 });
 
-pool.connect()
-  .then(client => {
-    console.log('Successfully connected to the database!');
-    client.release();
-  })
-  .catch(err => console.error('Error connecting to the database:', err.message));
-
-module.exports = pool;
+module.exports = {
+  pool,
+  async testConnection() {
+    try {
+      const client = await pool.connect();
+      console.log('Successfully connected to the database!');
+      client.release();
+      return true;
+    } catch (err) {
+      console.error('Error connecting to the database:', err.message);
+      return false;
+    }
+  }
+};
