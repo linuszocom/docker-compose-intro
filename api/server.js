@@ -1,4 +1,4 @@
-const app = require('./api/index');
+const app = require('./index');
 
 const port = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
