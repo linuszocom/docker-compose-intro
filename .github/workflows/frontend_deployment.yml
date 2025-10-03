@@ -42,7 +42,8 @@ jobs:
         run: |
           docker build \
             -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            -f ${{ env.DOCKERFILE_PATH }} . 
+            --context frontend \ 
+            -f ${{ env.DOCKERFILE_PATH }} .
 
       # Pusha imagen till ACR
       - name: Push Image to ACR
