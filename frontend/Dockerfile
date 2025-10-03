@@ -12,7 +12,7 @@ RUN npm run build
 # Steg 2: PRODUCTION-fasen (Serverar appen med Nginx)
 FROM nginx:alpine as production
 
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
