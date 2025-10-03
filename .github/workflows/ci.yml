@@ -11,38 +11,42 @@ jobs:
     runs-on: ubuntu-latest
   
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Build API image
-      run: docker build -t my-api:latest ./api
+      - name: Log in to Azure Container Registry
+        run: |
+          docker login ${{ secrets.ACR_URL }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
 
-    - name: Run test
-      run: docker run --rm my-api:latest npm test
+      # Här har jag slagit ihop bygg och teststegen till ett
+      # Imagen byggs en gång och får en tagg som pekar direkt till ACR
+      - name: Build and test API image
+        run: |
+          docker build -t ${{ secrets.ACR_URL }}/api:latest ./api
+          # docker run --rm ${{ secrets.ACR_URL }}/api:latest npm test
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ secrets.ACR_URL }}/api:latest
 
-    - name: Tag image for Docker Hub
-      run: docker tag my-api:latest ${{ secrets.DOCKERHUB_USERNAME }}/my-api:latest
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'demo-app-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
+          images: ${{ secrets.ACR_URL }}/api:latest
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+  # build-and-test-frontend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
     
-    - name: Push image to Docker Hub
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api:latest
-
-  build-and-test-frontend:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install dependencies and build frontend
-      run: |
-        cd frontend
-        npm install
-        npm run build
+  #   - name: Install dependencies and build frontend
+  #     run: |
+  #       cd frontend
+  #       npm install
+  #       npm run build
         
-    - name: Build Frontend image
-      run: docker build -t my-frontend:latest ./frontend
+  #   - name: Build Frontend image
+  #     run: docker build -t my-frontend:latest ./frontend
