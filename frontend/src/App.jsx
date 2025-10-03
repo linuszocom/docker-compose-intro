@@ -14,7 +14,7 @@ function App() {
       .catch(error => console.error('Fel vid hämtning av API:', error));
   }, []);
 
-  // Funktion för att skicka data till API:et och spara i databasen
+  // Funktion för att skicka data till API:et
   const saveData = () => {
     const message = `Hej från React! Tid: ${new Date().toLocaleTimeString()}`;
     fetch('https://demo-app-2-fwdphvd3cpcxafcw.swedencentral-01.azurewebsites.net/api/data', {
