@@ -40,10 +40,11 @@ jobs:
       # Bygg och tagga Docker-imagen
       - name: Build and Tag Image
         run: |
+          cd frontend
           docker build \
-            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --context frontend \ 
-            -f ${{ env.DOCKERFILE_PATH }} .
+          -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          -f Dockerfile .
+
 
       # Pusha imagen till ACR
       - name: Push Image to ACR
