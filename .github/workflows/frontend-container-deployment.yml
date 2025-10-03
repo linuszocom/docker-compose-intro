@@ -9,7 +9,7 @@ on:
 
 env:
   AZURE_RESOURCE_GROUP: 'demo-rg'
-  AZURE_APP_SERVICE: 'demo-frontend-app' 
+  AZURE_APP_SERVICE: 'demo-frontend-app'
   ACR_NAME: 'chasDemoACR'
   IMAGE_NAME: 'frontend-app'
   DOCKERFILE_PATH: 'frontend/Dockerfile'
