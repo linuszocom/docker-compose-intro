@@ -8,7 +8,7 @@ function App() {
 
   // Hämtar meddelandet från API:et när komponenten laddas
   useEffect(() => {
-    fetch('https://demo-api-2-dzc2brb2cwdfbxga.swedencentral-01.azurewebsites.net/api')
+    fetch('https://demo-app-2-fwdphvd3cpcxafcw.swedencentral-01.azurewebsites.net/api')
       .then(response => response.json())
       .then(data => setApiMessage(data.message))
       .catch(error => console.error('Fel vid hämtning av API:', error));
@@ -17,7 +17,7 @@ function App() {
   // Funktion för att skicka data till API:et
   const saveData = () => {
     const message = `Hej från React! Tid: ${new Date().toLocaleTimeString()}`;
-    fetch('https://demo-api-2-dzc2brb2cwdfbxga.swedencentral-01.azurewebsites.net/api/data', {
+    fetch('https://demo-app-2-fwdphvd3cpcxafcw.swedencentral-01.azurewebsites.net/api/data', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
