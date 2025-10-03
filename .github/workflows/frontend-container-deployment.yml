@@ -3,7 +3,7 @@ name: Frontend Container Deployment to Azure App Service
 on:
   push:
     branches:
-      - main
+      - test
     paths:
       - 'frontend/**'
 
