@@ -3,13 +3,13 @@ name: Frontend Container Deployment to Azure App Service
 on:
   push:
     branches:
-      - main
+      - containerFrontend
     paths:
       - 'frontend/**'
 
 env:
   AZURE_RESOURCE_GROUP: 'demo-rg'
-  AZURE_APP_SERVICE: 'demo-frontend-app' 
+  AZURE_APP_SERVICE: 'demo-frontend-app'
   ACR_NAME: 'chasDemoACR'
   IMAGE_NAME: 'frontend-app'
   DOCKERFILE_PATH: 'frontend/Dockerfile'
@@ -40,10 +40,11 @@ jobs:
       # Bygg och tagga Docker-imagen
       - name: Build and Tag Image
         run: |
+          cd frontend
           docker build \
-            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --context frontend \ 
-            -f ${{ env.DOCKERFILE_PATH }} .
+          -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          -f Dockerfile .
+
 
       # Pusha imagen till ACR
       - name: Push Image to ACR
