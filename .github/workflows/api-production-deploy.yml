@@ -1,0 +1,38 @@
+name: API Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Image Tag
+        id: set_tag
+        run: echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Log in to Azure Container Registry
+        run: |
+          docker login ${{ secrets.ACR_URL }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and test API image
+        run: |
+          docker build -t ${{ secrets.ACR_URL }}/api:${{ env.IMAGE_TAG }} ./api
+          # docker run --rm ${{ secrets.ACR_URL }}/api:${{ env.IMAGE_TAG }} npm test
+
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ secrets.ACR_URL }}/api:${{ env.IMAGE_TAG }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'demo-api-production'
+          images: ${{ secrets.ACR_URL }}/api:${{ env.IMAGE_TAG }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_API_PUBLIC_PROFILE }}
