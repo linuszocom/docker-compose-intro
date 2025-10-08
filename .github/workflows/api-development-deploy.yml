@@ -9,6 +9,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    # Behörigheter för att kunna pusha till gh-pages branchen
+    permissions:
+      contents: write
   
     steps:
       - name: Checkout code
