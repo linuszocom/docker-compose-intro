@@ -10,9 +10,9 @@ const options = {
       description: 'DevOps demo API för hantering av status och data.',
     },
     servers: [
-      {
-        url: '/', // Bas-URL för API:et
-      },
+      { url: '/api' }, // relativ bas funkar både lokalt och i prod bakom samma host
+      { url: 'http://localhost:3000/api' }, // lokal 
+      { url: 'https://demo-app-2-fwdphvd3cpcxafcw.swedencentral-01.azurewebsites.net/api' }, // stage dev
     ],
   },
   // Ber Swagger VAR dina kommenterade filer ligger:
