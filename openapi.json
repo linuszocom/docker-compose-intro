@@ -1,0 +1,16 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Winescrape API Dokumentation",
+    "version": "1.0.0",
+    "description": "DevOps demo API för hantering av status och data."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {},
+  "components": {},
+  "tags": []
+}
