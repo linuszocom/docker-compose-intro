@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Dokumentation",
+    "version": "1.0.0",
+    "description": "DevOps demo API för hantering av status och data."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Hämtar API:ets status och returnerar ett hälsningsmeddelande.",
+        "description": "Används för att verifiera att API-tjänsten är igång (health check).",
+        "tags": [
+          "Status"
+        ],
+        "responses": {
+          "200": {
+            "description": "API-tjänsten är online och fungerar.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Hello from the API!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

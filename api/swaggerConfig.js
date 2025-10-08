@@ -1,10 +1,11 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Winescrape API Dokumentation',
+      title: 'API Dokumentation',
       version: '1.0.0',
       description: 'DevOps demo API för hantering av status och data.',
     },
@@ -15,7 +16,7 @@ const options = {
     ],
   },
   // Ber Swagger VAR dina kommenterade filer ligger:
-  apis: ['./routes.js'], // Pekar på din routes-fil
+  apis: [path.resolve(__dirname, 'routes.js')], // Pekar på din routes-fil
 };
 
 const specs = swaggerJsdoc(options);
