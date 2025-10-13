@@ -14,6 +14,7 @@ jobs:
     permissions:
       contents: write
       security-events: write
+
   
     steps:
       - name: Checkout code
@@ -25,6 +26,19 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: javascript # Lägg till annat språk om nödvändigt
+
+      - name: Install dependencies and Generate Docs
+        run: |
+          npm install
+          npm run docs:generate # Kör din script för att generera dokumentation
+        working-directory: ./api
+
+      - name: Deploy Docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages # Målgren för den publika dokumentationen
+          publish_dir: ./api/docs
 
       - name: Install dependencies and Generate Docs
         run: |
