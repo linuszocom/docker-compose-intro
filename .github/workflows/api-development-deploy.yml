@@ -9,10 +9,35 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    # Behörigheter för att kunna pusha till gh-pages branchen
+    permissions:
+      contents: write
+      security-events: write
   
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript # Lägg till annat språk om nödvändigt
+
+      - name: Install dependencies and Generate Docs
+        run: |
+          npm install
+          npm run docs:generate # Kör din script för att generera dokumentation
+        working-directory: ./api
+
+      - name: Deploy Docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages # Målgren för den publika dokumentationen
+          publish_dir: ./api/docs
 
       - name: Log in to Azure Container Registry
         run: |
@@ -35,18 +60,3 @@ jobs:
           app-name: 'demo-app-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
           images: ${{ secrets.ACR_URL }}/api:latest
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-
-  # build-and-test-frontend:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
-    
-  #   - name: Install dependencies and build frontend
-  #     run: |
-  #       cd frontend
-  #       npm install
-  #       npm run build
-        
-  #   - name: Build Frontend image
-  #     run: docker build -t my-frontend:latest ./frontend
