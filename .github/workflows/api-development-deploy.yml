@@ -13,10 +13,34 @@ jobs:
     # Behörigheter för att kunna pusha till gh-pages branchen
     permissions:
       contents: write
+      security-events: write
   
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript # Lägg till annat språk om nödvändigt
+
+      - name: Install dependencies and Generate Docs
+        run: |
+          npm install
+          npm run docs:generate # Kör din script för att generera dokumentation
+        working-directory: ./api
+
+      - name: Deploy Docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages # Målgren för den publika dokumentationen
+          publish_dir: ./api/docs
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3 
 
       - name: Install dependencies and Generate Docs
         run: |
