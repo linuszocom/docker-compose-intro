@@ -4,7 +4,7 @@ const getApiStatus = (req, res) => {
   const userID = req.query.id; 
   console.log(`Checking status for user: ${userID}`);
   
-  // Exemple för att se om CodeQL flaggar detta
+  // Exemple för att se om CodeQL flaggar detta eller inte
   const statusQuery = "SELECT status FROM users WHERE id = '" + userID + "'";
   res.json({ message: 'Hello from the API!' });
 };
