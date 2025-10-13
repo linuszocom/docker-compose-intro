@@ -1,7 +1,11 @@
 const { pool } = require('./database');
 
 const getApiStatus = (req, res) => {
-  console.log('GET /api endpoint was called.'); 
+  const userID = req.query.id; 
+  console.log(`Checking status for user: ${userID}`);
+  
+  // Exemple för att se om CodeQL flaggar detta
+  const statusQuery = "SELECT status FROM users WHERE id = '" + userID + "'";
   res.json({ message: 'Hello from the API!' });
 };
 
