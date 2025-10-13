@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0 
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript # Lägg till annat språk om nödvändigt
 
@@ -38,6 +38,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages # Målgren för den publika dokumentationen
           publish_dir: ./api/docs
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3 
 
       - name: Log in to Azure Container Registry
         run: |
