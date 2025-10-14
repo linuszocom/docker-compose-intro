@@ -32,6 +32,9 @@ jobs:
         with:
           languages: javascript 
 
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3 
+
       - name: Install dependencies 
         run: npm install
         working-directory: ./api
@@ -43,9 +46,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
         with:
           args: --file=./api/package.json 
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3 
 
   
   # JOB 2: Build & Deploy
