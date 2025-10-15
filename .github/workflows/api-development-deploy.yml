@@ -1,22 +1,25 @@
-name: Build and Test
+name: CI/CD Pipeline - API Service
 
 on:
   push:
     branches:
-      - dev
+      - dev # Trigger för Deployment efter Merge
   pull_request:
     branches:
-      - dev
+      - dev # Trigger för CodeQL-granskning före Merge
 
 
 jobs:
-  build-and-test:
+  # JOB 1: Säkerhetskontroll med CodeQL
+  security-check:
     runs-on: ubuntu-latest
+    
+    # Körs endast vid Pull Request-händelser.
+    if: github.event_name == 'pull_request' 
 
-    # Behörigheter för att kunna pusha till gh-pages branchen
     permissions:
-      contents: write
-      security-events: write
+      contents: read 
+      security-events: write # Nödvändigt för att rapportera CodeQL-resultat
   
     steps:
       - name: Checkout code
@@ -24,58 +27,153 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Initialize CodeQL
+      - name: Initialize CodeQL (AI Code Review Start)
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript # Lägg till annat språk om nödvändigt
-
-      - name: Install dependencies and Generate Docs
-        run: |
-          npm install
-          npm run docs:generate # Kör din script för att generera dokumentation
-        working-directory: ./api
-
-      - name: Deploy Docs to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages # Målgren för den publika dokumentationen
-          publish_dir: ./api/docs
+          languages: javascript 
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3 
 
+      - name: Install dependencies 
+        run: npm install
+        working-directory: ./api
+
+      - name: Run Snyk for Dependencies
+        uses: snyk/actions/node@master
+        continue-on-error: true 
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} 
+        with:
+          args: --file=./api/package.json 
+
+  
+  # JOB 2: Build & Deploy
+  deploy:
+    runs-on: ubuntu-latest
+    
+    # Körs endast vid Push-händelser (när koden har mergats)
+    if: github.event_name == 'push' 
+    
+    permissions:
+      contents: write # Behövs för att pusha till gh-pages
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Dokumentationsstegen
       - name: Install dependencies and Generate Docs
         run: |
           npm install
-          npm run docs:generate # Kör din script för att generera dokumentation
+          npm run docs:generate
         working-directory: ./api
 
       - name: Deploy Docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages # Målgren för den publika dokumentationen
+          publish_branch: gh-pages
           publish_dir: ./api/docs
 
+      # Docker/Azure Deployment
       - name: Log in to Azure Container Registry
         run: |
           docker login ${{ secrets.ACR_URL }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
 
-      # Här har jag slagit ihop bygg och teststegen till ett
-      # Imagen byggs en gång och får en tagg som pekar direkt till ACR
       - name: Build and test API image
-        run: |
-          docker build -t ${{ secrets.ACR_URL }}/api:latest ./api
-          # docker run --rm ${{ secrets.ACR_URL }}/api:latest npm test
+        run: docker build -t ${{ secrets.ACR_URL }}/api:latest ./api
 
       - name: Push Docker image to ACR
-        run: |
-          docker push ${{ secrets.ACR_URL }}/api:latest
+        run: docker push ${{ secrets.ACR_URL }}/api:latest
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'demo-app-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
+          app-name: 'demo-app-2' 
           images: ${{ secrets.ACR_URL }}/api:latest
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+# Gamla workflow innan refaktorering
+
+# name: Build and Test
+
+# on:
+#   push:
+#     branches:
+#       - dev
+#   pull_request:
+#     branches:
+#       - dev
+
+
+# jobs:
+#   build-and-test:
+#     runs-on: ubuntu-latest
+
+#     # Behörigheter för att köra CodeQL och pusha till gh-pages
+#     permissions:
+#       contents: write # Detta behövs för att pusha till gh-pages (vi använder gh-pages för dokumentation)
+#       security-events: write # Detta behövs för CodeQL
+  
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0 # Nödvändigt för CodeQL att ha hela historiken
+
+#       - name: Initialize CodeQL
+#         uses: github/codeql-action/init@v3
+#         with:
+#           languages: javascript # Lägg till annat språk om nödvändigt
+
+#       - name: Install dependencies and Generate Docs
+#         run: |
+#           npm install
+#           npm run docs:generate # Kör din script för att generera dokumentation
+#         working-directory: ./api
+
+#       - name: Deploy Docs to GitHub Pages
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_branch: gh-pages # Målgren för den publika dokumentationen
+#           publish_dir: ./api/docs
+
+#       - name: Perform CodeQL Analysis
+#         uses: github/codeql-action/analyze@v3 
+
+#       - name: Install dependencies and Generate Docs
+#         run: |
+#           npm install
+#           npm run docs:generate # Kör din script för att generera dokumentation
+#         working-directory: ./api
+
+#       - name: Deploy Docs to GitHub Pages
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_branch: gh-pages # Målgren för den publika dokumentationen
+#           publish_dir: ./api/docs
+
+#       - name: Log in to Azure Container Registry
+#         run: |
+#           docker login ${{ secrets.ACR_URL }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+
+#       # Här har jag slagit ihop bygg och teststegen till ett
+#       # Imagen byggs en gång och får en tagg som pekar direkt till ACR
+#       - name: Build and test API image
+#         run: |
+#           docker build -t ${{ secrets.ACR_URL }}/api:latest ./api
+#           # docker run --rm ${{ secrets.ACR_URL }}/api:latest npm test
+
+#       - name: Push Docker image to ACR
+#         run: |
+#           docker push ${{ secrets.ACR_URL }}/api:latest
+
+#       - name: Deploy to Azure App Service
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: 'demo-app-2' # detta är namnet på eran Azure App Service (använd gärna variabel namn här)
+#           images: ${{ secrets.ACR_URL }}/api:latest
+#           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
